@@ -1,6 +1,26 @@
 const Base = require("./base.js");
 
 module.exports = class extends Base {
+  async checkUserAction() {
+    if (this.isGet) {
+      // 如果是 GET 请求
+      const code = this.ctx.param("code");
+      if (code) {
+
+      }
+      const id = 'ww3998faacdb590e99';
+      const secret = 'xK9SFZ1j8yY6g5mPzM2WAWFSN8D7_UwVK4BGkwTPCyU';
+
+      const url = `https://qyapi.weixin.qq.com/cgi-bin/gettoken?corpid=${id}&corpsecret=${secret}`;
+      var tokenResult = await this.fetch(url, { method: 'GET' }).then(res => res.json());
+      if (tokenResult.access_token) {
+        const url = `https://qyapi.weixin.qq.com/cgi-bin/auth/getuserinfo?access_token=${tokenResult.access_token}&code=${code}`;
+        var userResult = await this.fetch(url, { method: 'GET' }).then(res => res.json());
+        console.log(userResult);
+        return this.success({ user: userResult });
+      }
+    }
+  }
   async queryPlansAction() {
     if (this.isGet) {
       // 如果是 GET 请求
