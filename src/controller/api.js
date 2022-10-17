@@ -17,11 +17,9 @@ module.exports = class extends Base {
       return this.fail(400, "账号或密码不正确");
     }
   }
-
   async checkAuthAction() {
     return this.success({}, "用户登陆成功");
   }
-
   async checkUserAction() {
     if (this.isGet) {
       // 如果是 GET 请求
@@ -64,6 +62,44 @@ module.exports = class extends Base {
       return this.success({ plans: final });
     }
   }
+  async updatePlanAction() {
+    if (this.isPost) {
+    }
+  }
+  async updateItemsAction() {
+    if (this.isPost) {
+      const plans = this.post("plans");
+      const planModel = this.model("ins_plan_clone");
+      const planIdMap = {};
+
+      for (let x = 0; x < plans.length; x++) {
+        const plan = plans[x];
+        const id = await planModel.add({
+          payer: plan.payer,
+          product_name: plan.productName,
+          name: plan.name,
+          type_id: plan.typeId
+        });
+        planIdMap[plan.id] = id;
+      }
+
+      const items = this.post("items");
+      const itemModel = this.model("ins_plan_item_clone");
+      for (let x = 0; x < items.length; x++) {
+        const item = items[x];
+        const plan_id = planIdMap[item.planId] || item.planId;
+        await itemModel.add({
+          plan_id,
+          parent_id: item.parentId,
+          name: item.name,
+          value: item.value,
+          seq: item.seq,
+          merge_item_id: item.mergeId
+        });
+      }
+      return this.success({}, "添加成功");
+    }
+  }
   async queryItemsAction() {
     if (this.isGet) {
       let planIds = this.ctx.param("planId");
@@ -101,6 +137,7 @@ module.exports = class extends Base {
 
           if (isNew) {
             item.name = newItem.name;
+            item.seq = newItem.seq;
             item.parentId = newItem.parent_id || null;
             item.values = [
               { planIds: [newItem.plan_id], value: newItem.value },
