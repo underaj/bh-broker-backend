@@ -1,25 +1,25 @@
-const Base = require('./base.js');
-const jwt = require('jsonwebtoken');
+const Base = require("./base.js");
+const jwt = require("jsonwebtoken");
 const userList = {
-  broker: '123456'
+  broker: "123456",
 };
 module.exports = class extends Base {
   async loginUserAction() {
-    const user = this.post('user');
-    const pw = this.post('password');
+    const user = this.post("user");
+    const pw = this.post("password");
     if (userList[user] && userList[user] === pw) {
       const payload = { user: user };
-      const token = jwt.sign(payload, think.config('secret'), {
+      const token = jwt.sign(payload, think.config("secret"), {
         expiresIn: 60 * 60 * 24 * 30,
       });
-      return this.success({ token }, '用户登陆成功');
+      return this.success({ token }, "用户登陆成功");
     } else {
-      return this.success({}, '用户登陆失败');
+      return this.success({}, "用户登陆失败");
     }
   }
 
   async checkAuthAction() {
-    
+    return this.success({}, "用户登陆成功");
   }
 
   async checkUserAction() {
@@ -137,7 +137,7 @@ module.exports = class extends Base {
       return this.success({
         plans: finalPlans,
         items: finalItems,
-        itemParents
+        itemParents,
       });
     }
   }
