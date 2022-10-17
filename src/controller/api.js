@@ -14,7 +14,7 @@ module.exports = class extends Base {
       });
       return this.success({ token }, "用户登陆成功");
     } else {
-      return this.success({}, "用户登陆失败");
+      return this.fail(400, "账号或密码不正确");
     }
   }
 
